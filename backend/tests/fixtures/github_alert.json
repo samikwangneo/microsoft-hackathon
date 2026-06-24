@@ -1,0 +1,28 @@
+{
+  "number": 7,
+  "state": "open",
+  "html_url": "https://github.com/acme/demo/security/dependabot/7",
+  "created_at": "2026-06-23T12:00:00Z",
+  "dependency": {
+    "package": { "ecosystem": "npm", "name": "lodash" },
+    "manifest_path": "package.json",
+    "scope": "runtime"
+  },
+  "security_vulnerability": {
+    "package": { "ecosystem": "npm", "name": "lodash" },
+    "severity": "high",
+    "vulnerable_version_range": "< 4.17.21",
+    "first_patched_version": { "identifier": "4.17.21" }
+  },
+  "security_advisory": {
+    "ghsa_id": "GHSA-jf85-cpcp-j695",
+    "cve_id": "CVE-2020-8203",
+    "summary": "Prototype Pollution in lodash",
+    "severity": "high",
+    "identifiers": [
+      { "type": "GHSA", "value": "GHSA-jf85-cpcp-j695" },
+      { "type": "CVE", "value": "CVE-2020-8203" }
+    ]
+  },
+  "installed_version": "4.17.19"
+}
