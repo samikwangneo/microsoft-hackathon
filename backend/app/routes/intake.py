@@ -2,7 +2,7 @@
 
 Three ways in, one way out (`NormalizedAlert`):
 - POST /intake/scan    — raw {ecosystem, package, version} (OSV core).
-- POST /intake/alert   — simplified scanner JSON (examples/sample-alert.json).
+- POST /intake/alert   — simplified scanner JSON (docs/examples/sample-alert.json).
 - POST /intake/github  — a GitHub Dependabot alert (+ installed_version).
 """
 
@@ -45,7 +45,7 @@ async def scan(req: ScanRequest) -> NormalizedAlert:
 
 @router.post("/alert", response_model=NormalizedAlert)
 async def ingest_scanner_alert(alert: ScannerAlert) -> NormalizedAlert:
-    """Ingest a simplified scanner alert (matches examples/sample-alert.json)."""
+    """Ingest a simplified scanner alert (matches docs/examples/sample-alert.json)."""
 
     req, alert_id = parsers.from_scanner_alert(alert)
     return await _normalize(req, alert_id)

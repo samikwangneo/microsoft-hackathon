@@ -41,7 +41,7 @@ Open http://127.0.0.1:8000/docs for interactive Swagger.
 |--------|------------------|-------------------------------------------------|
 | GET    | `/health`        | —                                               |
 | POST   | `/intake/scan`   | `{ecosystem, package, version}`                 |
-| POST   | `/intake/alert`  | simplified scanner JSON (`sample-alert.json`)   |
+| POST   | `/intake/alert`  | simplified scanner JSON (`docs/examples/sample-alert.json`) |
 | POST   | `/intake/github` | GitHub Dependabot alert + `installed_version`   |
 
 ### Example

@@ -4,7 +4,7 @@
 downstream Summary Agent / Case Identifier. Keep it stable.
 
 Input shapes intake accepts:
-- `ScannerAlert`     — the simplified scanner JSON (examples/sample-alert.json).
+- `ScannerAlert`     — the simplified scanner JSON (docs/examples/sample-alert.json).
 - `GitHubDependabotAlert` — a tolerant subset of a real GitHub Dependabot alert.
 - `ScanRequest`      — the minimal {ecosystem, package, version} OSV query input.
 
@@ -52,7 +52,7 @@ class ScanRequest(BaseModel):
 
 
 class ScannerAlert(BaseModel):
-    """The simplified scanner shape used in examples/sample-alert.json.
+    """The simplified scanner shape used in docs/examples/sample-alert.json.
 
     Tolerant by design: a scanner may omit the fixed version (OSV backfills it)
     and may not know the precise ecosystem (defaults to npm for the MVP).
