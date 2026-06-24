@@ -216,3 +216,42 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+# VS Code
+.vscode/
+
+# JetBrains
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Secrets
+.env.local
+.env.dev
+.env.prod
+secrets/
+*.pem
+*.key
+
+# Project temp outputs
+output/
+reports/
+artifacts/
+logs/
+
+# Generated vulnerability data
+data/cache/
+data/results/
+
+# Node (if frontend/demo exists)
+node_modules/
+
+# Misc
+tmp/
+temp/
