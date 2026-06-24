@@ -31,3 +31,14 @@ See docs/team-roles.md
 - Dependency remediation
 - Validation
 - Pull request generation
+
+## RULES
+Nobody commits directly to main.
+
+Everyone creates:
+    feature/samik-intake
+    feature/madalina-agents
+    feature/danniecia-remediation
+    feature/israel-validation
+    feature/es-frontend
+All changes go through PRs.
