@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from supplyfix.tools.shell import run_command
+from patchpilot.tools.shell import run_command
 
 
 async def _git(repo: Path, *args: str, timeout: int = 60) -> tuple[str, str, int]:

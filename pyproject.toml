@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "supplyfix"
+name = "patchpilot"
 version = "0.1.0"
 description = "Agentic supply-chain security assistant — finds and fixes vulnerable dependencies, then opens a PR"
 requires-python = ">=3.11"
@@ -22,10 +22,10 @@ dev = [
 ]
 
 [project.scripts]
-supplyfix = "supplyfix.cli:main_sync"
+patchpilot = "patchpilot.cli:main_sync"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/supplyfix"]
+packages = ["src/patchpilot"]
 
 [tool.ruff]
 line-length = 100

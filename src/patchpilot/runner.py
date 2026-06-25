@@ -13,9 +13,9 @@ from pydantic_ai import Agent
 from pydantic_ai.messages import TextPart, ToolCallPart, ToolReturnPart
 from pydantic_ai.usage import UsageLimits
 
-from supplyfix import _budget
-from supplyfix._budget import CallToolsNode, ModelRequestNode
-from supplyfix.telemetry import emit
+from patchpilot import _budget
+from patchpilot._budget import CallToolsNode, ModelRequestNode
+from patchpilot.telemetry import emit
 
 
 class AgentRunner:

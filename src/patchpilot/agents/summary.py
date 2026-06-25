@@ -18,17 +18,18 @@ from dataclasses import dataclass, field
 
 from pydantic_ai import Agent, RunContext
 
-from supplyfix.config import settings
-from supplyfix.models.notification import Notification
-from supplyfix.models.results import PackageResult, RunResult
-from supplyfix.runner import AgentRunner
-from supplyfix.tools import email as email_tool
-from supplyfix.tools import git
+from patchpilot.config import settings
+from patchpilot.models.notification import Notification
+from patchpilot.models.results import PackageResult, RunResult
+from patchpilot.runner import AgentRunner
+from patchpilot.tools import email as email_tool
+from patchpilot.tools import git
 
 _SYSTEM_PROMPT = """\
-You are the orchestrator for an automated supply-chain remediation system. You
-receive a notification describing vulnerable packages in one repository and
-drive the whole fix-and-PR workflow.
+You are PatchPilot, the orchestrator for an automated supply-chain remediation
+system. You receive a notification describing vulnerable packages in one
+repository and drive the whole fix-and-PR workflow. When you write the PR and
+the user email, refer to yourself as PatchPilot.
 
 Workflow (do these in order):
 1. Write a short situational summary of the notification (severities, packages,
@@ -73,7 +74,7 @@ _runner = AgentRunner("summary", summary_agent, settings.max_summary_requests)
 async def create_branch(ctx: RunContext[SummaryDeps], branch_name: str = "") -> str:
     """Create and switch to a remediation branch in the target repository.
 
-    The branch name is generated deterministically (supplyfix/remediate-<UTC
+    The branch name is generated deterministically (patchpilot/remediate-<UTC
     timestamp>); any name suggested by the model is ignored so branch names are
     always correctly dated and collision-free.
     """
@@ -91,7 +92,7 @@ async def fix_package(ctx: RunContext[SummaryDeps], package_name: str) -> str:
     The package must be one named in the notification. Returns a summary of the
     package's fixes.
     """
-    from supplyfix.agents.package import run_package_agent
+    from patchpilot.agents.package import run_package_agent
 
     notif = ctx.deps.notification
     package = next((p for p in notif.packages if p.name == package_name), None)
@@ -186,4 +187,4 @@ async def run_summary_agent(
 
 
 def default_branch_name() -> str:
-    return f"supplyfix/remediate-{time.strftime('%Y%m%d-%H%M%S')}"
+    return f"patchpilot/remediate-{time.strftime('%Y%m%d-%H%M%S')}"

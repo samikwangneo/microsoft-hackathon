@@ -1,6 +1,6 @@
 """Structured event logging.
 
-Events are appended as JSON lines to the file named in SUPPLYFIX_EVENT_LOG.
+Events are appended as JSON lines to the file named in PATCHPILOT_EVENT_LOG.
 If the variable is unset, emit() is a no-op, so telemetry is opt-in and never
 interferes with normal runs.
 """
@@ -16,8 +16,8 @@ from typing import Any
 
 
 def emit(kind: str, *, agent: str | None = None, message: str | None = None, **data: Any) -> None:
-    """Append a structured event when SUPPLYFIX_EVENT_LOG is configured."""
-    target = os.environ.get("SUPPLYFIX_EVENT_LOG")
+    """Append a structured event when PATCHPILOT_EVENT_LOG is configured."""
+    target = os.environ.get("PATCHPILOT_EVENT_LOG")
     if not target:
         return
 
@@ -25,7 +25,7 @@ def emit(kind: str, *, agent: str | None = None, message: str | None = None, **d
         "id": f"evt_{uuid.uuid4().hex[:12]}",
         "ts": time.time(),
         "kind": kind,
-        "run_id": os.environ.get("SUPPLYFIX_RUN_ID"),
+        "run_id": os.environ.get("PATCHPILOT_RUN_ID"),
         "agent": agent,
         "message": message,
         "data": _jsonable(data),

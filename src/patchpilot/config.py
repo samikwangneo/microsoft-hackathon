@@ -20,7 +20,7 @@ from pydantic_ai.providers.anthropic import AnthropicProvider
 
 def _load_config() -> dict:
     candidates = [
-        Path(os.environ.get("SUPPLYFIX_CONFIG", "")),
+        Path(os.environ.get("PATCHPILOT_CONFIG", "")),
         Path.cwd() / "config.yaml",
         Path(__file__).parent.parent.parent / "config.yaml",
     ]
@@ -60,13 +60,13 @@ class Settings:
 
         self.anthropic_api_key: str = os.environ.get("ANTHROPIC_API_KEY", "")
         self.summary_model: str = os.environ.get(
-            "SUPPLYFIX_SUMMARY_MODEL", validated.models.summary
+            "PATCHPILOT_SUMMARY_MODEL", validated.models.summary
         )
         self.package_model: str = os.environ.get(
-            "SUPPLYFIX_PACKAGE_MODEL", validated.models.package
+            "PATCHPILOT_PACKAGE_MODEL", validated.models.package
         )
         self.vulnerability_model: str = os.environ.get(
-            "SUPPLYFIX_VULN_MODEL", validated.models.vulnerability
+            "PATCHPILOT_VULN_MODEL", validated.models.vulnerability
         )
         self.max_summary_requests: int = validated.budget.max_summary_requests
         self.max_package_requests: int = validated.budget.max_package_requests

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pydantic_ai import Agent
 
-from supplyfix.tools.shell import edit_file, read_file, write_file
+from patchpilot.tools.shell import edit_file, read_file, write_file
 
 
 def register_file_tools(agent: Agent) -> None:

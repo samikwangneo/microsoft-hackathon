@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# send_email.sh — send a plain-text email for supplyfix.
+# send_email.sh — send a plain-text email for PatchPilot.
 #
 # Usage:
 #   send_email.sh --to <addr> --subject <subject> [--from <addr>] [--body-file <path>]
@@ -11,7 +11,7 @@
 #   1. If SMTP_* env vars are set and `curl` is available, send via SMTP.
 #   2. Else if `sendmail` is available, pipe an RFC-822 message to it.
 #   3. Else fall back to writing the message to the local outbox directory
-#      (SUPPLYFIX_OUTBOX, default ./outbox) so a demo run always produces an
+#      (PATCHPILOT_OUTBOX, default ./outbox) so a demo run always produces an
 #      artifact and never silently fails.
 #
 # SMTP env vars (all required to use strategy 1):
@@ -23,7 +23,7 @@ set -euo pipefail
 
 TO=""
 SUBJECT=""
-FROM="${SUPPLYFIX_FROM:-supplyfix@localhost}"
+FROM="${PATCHPILOT_FROM:-patchpilot@localhost}"
 BODY_FILE=""
 
 while [[ $# -gt 0 ]]; do
@@ -87,7 +87,7 @@ if command -v sendmail >/dev/null 2>&1; then
 fi
 
 # Strategy 3: write to the outbox.
-OUTBOX="${SUPPLYFIX_OUTBOX:-./outbox}"
+OUTBOX="${PATCHPILOT_OUTBOX:-./outbox}"
 mkdir -p "$OUTBOX"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 OUTFILE="${OUTBOX}/email-${STAMP}.txt"

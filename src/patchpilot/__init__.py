@@ -1,4 +1,4 @@
-"""supplyfix — an agentic supply-chain security assistant.
+"""PatchPilot — an agentic supply-chain security assistant.
 
 A three-tier hierarchy of Pydantic AI agents remediates vulnerable
 dependencies and opens a pull request:

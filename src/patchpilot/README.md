@@ -1,4 +1,4 @@
-# supplyfix — agentic supply-chain remediation
+# PatchPilot — agentic supply-chain remediation
 
 A three-tier hierarchy of [Pydantic AI](https://ai.pydantic.dev) agents that
 takes a vulnerability notification, fixes the affected dependencies in a target
@@ -55,7 +55,7 @@ to override model choices and per-agent request budgets.
 ## Run
 
 ```bash
-python -m supplyfix \
+python -m patchpilot \
   --notification examples/notification.json \
   --email you@example.com \
   --repo-path /path/to/target/repo
@@ -97,5 +97,5 @@ packages, each with many vulnerabilities:
   / sendmail delivery later behind the same interface.
 - **Budgets**: every agent run is capped by a request limit and receives
   per-turn budget reminders, so runs terminate predictably.
-- Set `SUPPLYFIX_EVENT_LOG=path.jsonl` to capture a structured trace of every
+- Set `PATCHPILOT_EVENT_LOG=path.jsonl` to capture a structured trace of every
   agent request, tool call, and tool return.

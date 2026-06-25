@@ -85,7 +85,7 @@ Since we are working with no formal notification system, we provide a JSON of a 
 }
 ```
 
-## Running PatchPilot (temporarily names SupplyFix)
+## Running PatchPilot
 
 Make sure to start venv and add your Anthropic API key!
 
@@ -99,7 +99,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 How to run:
 
 ```bash
-python -m supplyfix \
+python -m patchpilot \
   --notification examples/notification.json \
   --email you@example.com \
   --repo-path /path/to/target/repo
@@ -108,16 +108,16 @@ python -m supplyfix \
 So, the command for this POC is:
 
 ```bash
-python -m supplyfix \
+python -m patchpilot \
   --notification /Users/madalinastoicov/CSStoicov/side-projects/msft-hack-test/notifications/notification.json \
   --email stoicovmadalina@gmail.com \
   --repo-path /Users/madalinastoicov/CSStoicov/side-projects/msft-hack-test
 ```
 
-Add `SUPPLYFIX_EVENT_LOG=trace.jsonl` before the `python` command to get a log of agent calls.
+Add `PATCHPILOT_EVENT_LOG=trace.jsonl` before the `python` command to get a log of agent calls.
 
 ```bash
-SUPPLYFIX_EVENT_LOG=trace.jsonl python -m supplyfix \
+PATCHPILOT_EVENT_LOG=trace.jsonl python -m patchpilot \
   --notification /Users/madalinastoicov/CSStoicov/side-projects/msft-hack-test/notifications/notification.json \
   --email stoicovmadalina@gmail.com \
   --repo-path /Users/madalinastoicov/CSStoicov/side-projects/msft-hack-test
@@ -128,7 +128,7 @@ SUPPLYFIX_EVENT_LOG=trace.jsonl python -m supplyfix \
 Bash output from running the command (shows agent trace):
 
 ```bash
-(.venv) madalinastoicov@madefile microsoft-hackathon % SUPPLYFIX_EVENT_LOG=trace.jsonl python -m supplyfix \
+(.venv) madalinastoicov@madefile microsoft-hackathon % PATCHPILOT_EVENT_LOG=trace.jsonl python -m patchpilot \
   --notification /Users/madalinastoicov/CSStoicov/side-projects/msft-hack-test/notifications/notification.json \
   --email stoicovmadalina@gmail.com \
   --repo-path /Users/madalinastoicov/CSStoicov/side-projects/msft-hack-test
@@ -140,7 +140,7 @@ ModuleNotFoundError("No module named 'urllib3.packages.six.moves'")
 [*] Repository   : /Users/madalinastoicov/CSStoicov/side-projects/msft-hack-test
 [*] Packages     : ['requests', 'pyyaml']
 [*] Notify       : stoicovmadalina@gmail.com
-[*] Suggested branch name: supplyfix/remediate-20260624-193149
+[*] Suggested branch name: patchpilot/remediate-20260624-193149
 
   [summary] → create_branch
   [summary] → fix_package
@@ -181,14 +181,14 @@ ModuleNotFoundError("No module named 'urllib3.packages.six.moves'")
 
 === EMAIL ===
 To: stoicovmadalina@gmail.com
-Subject: SupplyFix: 2 vulnerabilities remediated in msft-hack-test
+Subject: PatchPilot: 2 vulnerabilities remediated in msft-hack-test
 
 Hi Madalina,
 
-SupplyFix has successfully remediated 2 vulnerabilities in your repository msft-hack-test. A pull request has been opened for your review.
+PatchPilot has successfully remediated 2 vulnerabilities in your repository msft-hack-test. A pull request has been opened for your review.
 
 🔗 Pull Request: https://github.com/mmstoic/msft-hack-test/pull/1
-📌 Branch: supplyfix/remediate-20260624-193151
+📌 Branch: patchpilot/remediate-20260624-193151
 
 ── Fixes Summary ──────────────────────────────────────
 
@@ -209,7 +209,7 @@ Both fixes only required version bumps in requirements.txt and are fully backwar
 Please review and merge the PR at your earliest convenience, especially given the critical severity of the pyyaml vulnerability.
 
 Best,
-SupplyFix 🤖
+PatchPilot 🤖
 
 =============
 
@@ -218,7 +218,7 @@ SupplyFix 🤖
 ============================================================
   Remediation SUCCEEDED
 ============================================================
-  Branch  : supplyfix/remediate-20260624-193151
+  Branch  : patchpilot/remediate-20260624-193151
   PR      : https://github.com/mmstoic/msft-hack-test/pull/1
   Email   : sent
 
@@ -235,7 +235,7 @@ The Git history in the repo shows that patches were applied!
 
 ```bash
 (.venv) madalinastoicov@madefile msft-hack-test % git log
-commit 221eb6fbf6cda449969fbec4f142f82b43389ded (HEAD -> supplyfix/remediate-20260624-193151, origin/supplyfix/remediate-20260624-193151)
+commit 221eb6fbf6cda449969fbec4f142f82b43389ded (HEAD -> patchpilot/remediate-20260624-193151, origin/patchpilot/remediate-20260624-193151)
 Author: Madalina <stoicovmadalina@gmail.com>
 Date:   Wed Jun 24 19:32:56 2026 -0700
 

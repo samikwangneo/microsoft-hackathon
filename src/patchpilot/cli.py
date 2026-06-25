@@ -1,8 +1,8 @@
 """Command-line entry point.
 
 Usage:
-    supplyfix --notification path/to/notification.json --email you@example.com
-    python -m supplyfix --notification examples/notification.json --email you@example.com
+    patchpilot --notification path/to/notification.json --email you@example.com
+    python -m patchpilot --notification examples/notification.json --email you@example.com
 
 The notification JSON is parsed into a Notification model and handed to the
 summary agent, which drives the whole remediation → PR → email workflow.
@@ -16,14 +16,14 @@ import json
 import sys
 from pathlib import Path
 
-from supplyfix.agents.summary import default_branch_name, run_summary_agent
-from supplyfix.models.notification import Notification
-from supplyfix.models.results import RunResult
+from patchpilot.agents.summary import default_branch_name, run_summary_agent
+from patchpilot.models.notification import Notification
+from patchpilot.models.results import RunResult
 
 
 def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        prog="supplyfix",
+        prog="patchpilot",
         description="Agentic supply-chain security assistant.",
     )
     parser.add_argument(

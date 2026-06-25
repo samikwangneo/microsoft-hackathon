@@ -20,11 +20,11 @@ from pathlib import Path
 
 from pydantic_ai import Agent, RunContext
 
-from supplyfix.config import settings
-from supplyfix.models.notification import Package
-from supplyfix.models.results import FixCategory, PackageResult, VulnFixResult
-from supplyfix.runner import AgentRunner
-from supplyfix.tools.shell import read_file, run_bash
+from patchpilot.config import settings
+from patchpilot.models.notification import Package
+from patchpilot.models.results import FixCategory, PackageResult, VulnFixResult
+from patchpilot.runner import AgentRunner
+from patchpilot.tools.shell import read_file, run_bash
 
 _SYSTEM_PROMPT = """\
 You coordinate fixing every vulnerability in ONE package of a repository.
@@ -111,7 +111,7 @@ async def fix_vulnerability(
     Pass the chosen *category* and a concrete *fix_description*. Returns a
     summary of the fix including the commit SHA (or an error).
     """
-    from supplyfix.agents.vulnerability import run_vulnerability_agent
+    from patchpilot.agents.vulnerability import run_vulnerability_agent
 
     vuln = next(
         (v for v in ctx.deps.package.vulnerabilities if v.id == vulnerability_id),

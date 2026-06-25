@@ -1,11 +1,11 @@
-# supplyfix configuration (optional).
+# PatchPilot configuration (optional).
 # Copy to config.yaml to override defaults. All values are optional.
 #
 # The only required secret is the ANTHROPIC_API_KEY environment variable:
 #   export ANTHROPIC_API_KEY=sk-ant-...
 #
 # Models can also be overridden via env vars:
-#   SUPPLYFIX_SUMMARY_MODEL, SUPPLYFIX_PACKAGE_MODEL, SUPPLYFIX_VULN_MODEL
+#   PATCHPILOT_SUMMARY_MODEL, PATCHPILOT_PACKAGE_MODEL, PATCHPILOT_VULN_MODEL
 
 app_settings:
   models:
