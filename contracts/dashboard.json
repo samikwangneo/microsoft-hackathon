@@ -1,0 +1,9 @@
+
+{
+  "alertId": "OSV-2026-001",
+  "status": "Resolved",
+  "severity": "HIGH",
+  "package": "lodash",
+  "validationPassed": true,
+  "prNumber": 42
+}

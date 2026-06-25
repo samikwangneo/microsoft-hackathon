@@ -1,0 +1,8 @@
+{
+  "package": "lodash",
+  "currentVersion": "4.17.20",
+  "fixedVersion": "4.17.21",
+  "severity": "HIGH",
+  "case": 1,
+  "reason": "Patch version available"
+}

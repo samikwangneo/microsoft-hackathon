@@ -1,0 +1,12 @@
+
+
+{
+  "alertId": "OSV-2026-001",
+  "summary": "Prototype vulnerability analysis",
+  "recommendedFix": {
+    "package": "lodash",
+    "fromVersion": "4.17.15",
+    "toVersion": "4.17.21"
+  },
+  "confidence": 0.95
+}
