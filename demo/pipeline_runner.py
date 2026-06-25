@@ -2,28 +2,59 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
+CONTRACTS = ROOT / "contracts"
 
-def load_json(name):
-    with open(ROOT / "contracts" / name, "r") as f:
+
+def load_json(filename):
+    with open(CONTRACTS / filename, "r") as f:
         return json.load(f)
 
+
+def build_dashboard_payload(notification, agent_output, validation):
+    return {
+        "notificationId": notification["notificationId"],
+        "package": notification["package"],
+        "severity": notification["severity"],
+        "summary": agent_output["summary"],
+        "recommendedFix": agent_output["recommendedFix"],
+        "validationPassed": validation["passed"],
+        "prTitle": agent_output["pullRequest"]["title"],
+        "status": "Ready for Review"
+    }
+
+
 def main():
-    alert = load_json("alert.json")
-    print("Alert received")
+    print("\n===================================")
+    print("      PATCHPILOT DEMO PIPELINE")
+    print("===================================\n")
 
-    agent = load_json("agent-output.json")
-    print("Agent completed")
+    notification = load_json("notification.json")
+    print("[1] Notification Received")
+    print(f"    Package: {notification['package']}")
+    print(f"    Severity: {notification['severity']}\n")
 
-    validation = load_json("validation.json")
-    print("Validation completed")
+    agent_output = load_json("agent_output.json")
+    print("[2] Agent Analysis Complete")
+    print(f"    Fix: {agent_output['recommendedFix']}\n")
 
-    dashboard = load_json("dashboard.json")
-    print("Dashboard updated")
+    validation = load_json("validation_output.json")
+    print("[3] Validation Complete")
+    print(f"    Passed: {validation['passed']}\n")
 
-    print("\n=== SUMMARY ===")
-    print(f"Package: {alert['package']}")
-    print(f"Status: {dashboard['status']}")
-    print(f"Validation Passed: {validation['passed']}")
+    dashboard_payload = build_dashboard_payload(
+        notification,
+        agent_output,
+        validation
+    )
+
+    with open(CONTRACTS / "dashboard_payload.json", "w") as f:
+        json.dump(dashboard_payload, f, indent=2)
+
+    print("[4] Dashboard Payload Generated")
+    print("    dashboard_payload.json updated\n")
+
+    print("Pipeline Finished Successfully")
+
 
 if __name__ == "__main__":
     main()
