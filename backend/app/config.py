@@ -9,7 +9,13 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     osv_api_base: str = "https://api.osv.dev"
-    cors_origins: str = "http://localhost:5173,http://localhost:3000"
+    # Vite uses 5173 but falls back to 5174/5175 when the port is busy, so allow
+    # the common dev ports on both localhost and 127.0.0.1.
+    cors_origins: str = (
+        "http://localhost:5173,http://localhost:5174,http://localhost:5175,"
+        "http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175,"
+        "http://localhost:3000"
+    )
     http_timeout: float = 15.0
 
     @property

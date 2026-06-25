@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from . import __version__
 from .config import get_settings
-from .routes import intake
+from .routes import dashboard, intake
 
 settings = get_settings()
 
@@ -29,6 +29,7 @@ app.add_middleware(
 )
 
 app.include_router(intake.router)
+app.include_router(dashboard.router)
 
 
 @app.get("/health", tags=["meta"])
