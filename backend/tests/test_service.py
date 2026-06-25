@@ -1,8 +1,10 @@
 """Service-level tests with OSV mocked via httpx.MockTransport (no network)."""
 
+import json
+
 import httpx
 
-from app.intake import service
+from app.intake import osv, service
 from app.models import Ecosystem, ScanRequest, Severity
 
 # A trimmed real-shaped OSV /v1/query response for lodash 4.17.19.
@@ -68,3 +70,45 @@ async def test_normalize_clean_package():
     assert result.fixed_version is None
     assert result.cve is None
     assert result.vulnerabilities == []
+
+
+def _per_package_client() -> httpx.AsyncClient:
+    """Returns the lodash vuln for lodash, nothing for anything else."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        name = json.loads(request.read())["package"]["name"]
+        return httpx.Response(200, json=OSV_RESPONSE if name == "lodash" else {"vulns": []})
+
+    return httpx.AsyncClient(transport=httpx.MockTransport(handler))
+
+
+def test_distill_ignores_git_commit_hashes_for_fixed_version():
+    # OSV often lists both a GIT range (commit-hash "fixed") and an ECOSYSTEM
+    # range (real version). We must pick the version, never the hash.
+    vuln = {
+        "id": "GHSA-test",
+        "affected": [
+            {
+                "package": {"ecosystem": "PyPI", "name": "django"},
+                "ranges": [
+                    {"type": "GIT", "events": [{"introduced": "0"}, {"fixed": "eb31d845323618d688ad429479c6dda973056136"}]},
+                    {"type": "ECOSYSTEM", "events": [{"introduced": "0"}, {"fixed": "2.2.28"}]},
+                ],
+            }
+        ],
+    }
+    req = ScanRequest(ecosystem=Ecosystem.PYPI, package="django", version="2.2.0")
+    assert osv.distill(vuln, req).fixed_version == "2.2.28"
+
+
+async def test_scan_many_scans_each_package():
+    reqs = [
+        ScanRequest(ecosystem=Ecosystem.NPM, package="lodash", version="4.17.19"),
+        ScanRequest(ecosystem=Ecosystem.NPM, package="minimist", version="1.2.5"),
+    ]
+    async with _per_package_client() as client:
+        results = await service.scan_many(reqs, client=client)
+
+    assert [r.package for r in results] == ["lodash", "minimist"]
+    assert results[0].vulnerable is True
+    assert results[1].vulnerable is False

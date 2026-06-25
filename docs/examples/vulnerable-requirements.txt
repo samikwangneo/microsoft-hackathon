@@ -1,0 +1,5 @@
+# Pinned, intentionally-vulnerable Python deps for the PyPI demo.
+Django==2.2.0
+Jinja2==2.10
+PyYAML==5.3
+requests==2.19.1

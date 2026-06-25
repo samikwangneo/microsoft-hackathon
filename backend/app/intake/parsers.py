@@ -1,7 +1,10 @@
-"""Translate the accepted input formats into a uniform `ScanRequest`.
+"""Translate single-alert inputs into a uniform `ScanRequest`.
 
 Both the simplified scanner alert and the GitHub Dependabot alert collapse to
 the same `(ScanRequest, alert_id)` pair the service needs to query OSV.
+
+Whole-file manifests (package.json, requirements.txt, *.csproj, ...) live in
+`manifests.py`.
 """
 
 from __future__ import annotations

@@ -15,7 +15,7 @@ package + ecosystem + installed version; OSV decides everything else.
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Ecosystem(str, Enum):
@@ -163,3 +163,51 @@ class NormalizedAlert(BaseModel):
     cve: str | None = None
     vulnerabilities: list[Vulnerability] = Field(default_factory=list)
     alert_id: str | None = None
+
+
+# ---------------------------------------------------------------------------
+# Manifest scanning (scan a whole repo's package.json)
+# ---------------------------------------------------------------------------
+
+
+class ManifestFile(BaseModel):
+    """A raw dependency file to scan, identified by filename.
+
+    `filename` selects the parser (package.json, requirements.txt, *.csproj,
+    packages.config); `content` is the file's raw text.
+    """
+
+    filename: str = Field(..., examples=["package.json", "requirements.txt"])
+    content: str
+
+
+class PackageJson(BaseModel):
+    """A tolerant npm package.json — only the bits intake needs."""
+
+    model_config = ConfigDict(populate_by_name=True, extra="ignore")
+
+    name: str | None = None
+    version: str | None = None
+    dependencies: dict[str, str] = Field(default_factory=dict)
+    dev_dependencies: dict[str, str] = Field(
+        default_factory=dict, alias="devDependencies"
+    )
+
+
+class SkippedDependency(BaseModel):
+    """A dependency intake couldn't scan (e.g. a range/tag, not a pinned version)."""
+
+    package: str
+    version_spec: str
+    reason: str
+
+
+class ManifestScanResult(BaseModel):
+    """Result of scanning every dependency in a manifest."""
+
+    ecosystem: Ecosystem
+    name: str | None = None
+    scanned: int
+    vulnerable_count: int
+    results: list[NormalizedAlert] = Field(default_factory=list)
+    skipped: list[SkippedDependency] = Field(default_factory=list)

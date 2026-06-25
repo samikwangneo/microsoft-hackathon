@@ -37,23 +37,44 @@ Open http://127.0.0.1:8000/docs for interactive Swagger.
 
 ## Endpoints
 
-| Method | Path             | Body                                            |
-|--------|------------------|-------------------------------------------------|
-| GET    | `/health`        | —                                               |
-| POST   | `/intake/scan`   | `{ecosystem, package, version}`                 |
-| POST   | `/intake/alert`  | simplified scanner JSON (`docs/examples/sample-alert.json`) |
-| POST   | `/intake/github` | GitHub Dependabot alert + `installed_version`   |
+| Method | Path               | Body                                            |
+|--------|--------------------|-------------------------------------------------|
+| GET    | `/health`          | —                                               |
+| POST   | `/intake/scan`     | `{ecosystem, package, version}`                 |
+| POST   | `/intake/alert`    | simplified scanner JSON (`docs/examples/sample-alert.json`) |
+| POST   | `/intake/github`   | GitHub Dependabot alert + `installed_version`   |
+| POST   | `/intake/manifest` | `{filename, content}` — scans every pinned dependency |
 
-### Example
+The first three return one `NormalizedAlert`. `/intake/manifest` returns a
+`ManifestScanResult` (counts + a `NormalizedAlert` per dependency).
+
+The manifest parser is chosen by `filename` (suffix match):
+
+| Manifest                       | Ecosystem |
+|--------------------------------|-----------|
+| `package.json`                 | npm       |
+| `requirements.txt` / `.in`     | PyPI      |
+| `*.csproj`, `packages.config`  | NuGet     |
+
+### Examples
 
 ```bash
+# single package
 curl -X POST http://127.0.0.1:8000/intake/scan \
   -H "content-type: application/json" \
   -d '{"ecosystem":"npm","package":"lodash","version":"4.17.19"}'
+
+# whole repo manifest (the demo path) — wrap the file as {filename, content}.
+# jq -Rs reads the file as a raw string into `content`:
+jq -Rs '{filename:"package.json", content:.}' docs/examples/vulnerable-package.json \
+  | curl -X POST http://127.0.0.1:8000/intake/manifest \
+      -H "content-type: application/json" -d @-
 ```
 
-Returns a `NormalizedAlert` with `vulnerable`, `severity`, `fixed_version`,
-`cve`, and the full list of distilled `vulnerabilities`.
+`/intake/scan` returns a `NormalizedAlert` with `vulnerable`, `severity`,
+`fixed_version`, `cve`, and the distilled `vulnerabilities`. `/intake/manifest`
+wraps one of those per dependency, plus a `skipped` list for any dependency
+whose version isn't an exact pin (ranges like `^1.2.3`, tags, git/file sources).
 
 ## Configuration
 

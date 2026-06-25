@@ -53,6 +53,9 @@ def _fixed_version_for(vuln: dict, req: ScanRequest) -> str | None:
         if pkg.get("ecosystem") and pkg.get("ecosystem") != req.ecosystem.value:
             continue
         for rng in affected.get("ranges", []):
+            # Skip GIT ranges — their "fixed" is a commit hash, not a version.
+            if rng.get("type") == "GIT":
+                continue
             for event in rng.get("events", []):
                 if "fixed" in event:
                     fixed.append(event["fixed"])
