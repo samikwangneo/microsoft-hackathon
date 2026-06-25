@@ -1,6 +1,13 @@
 # PatchPilot
 config.yaml
 outbox/
+# Env
+.env
+/backend/.env
+/frontend/.env
+.env/
+backend/.env
+frontend/.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

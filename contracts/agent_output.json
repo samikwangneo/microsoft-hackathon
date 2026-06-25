@@ -1,0 +1,17 @@
+{
+  "alert_id": "OSV-001",
+  "summary": "Prototype vulnerability analysis",
+  "recommended_fix": {
+    "package": "lodash",
+    "from_version": "4.17.19",
+    "to_version": "4.18.0"
+  },
+  "pull_request": {
+    "title": "Upgrade lodash to 4.18.0",
+    "description": "Auto-generated remediation"
+  },
+  "email": {
+    "subject": "Security remediation available",
+    "body": "A remediation has been generated."
+  }
+}
