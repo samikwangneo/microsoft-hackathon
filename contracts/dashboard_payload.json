@@ -1,14 +1,10 @@
 {
-  "notificationId": "OSV-001",
+  "alertId": "OSV-001",
   "package": "lodash",
   "severity": "HIGH",
   "summary": "Prototype vulnerability analysis",
-  "recommendedFix": {
-    "package": "lodash",
-    "fromVersion": "4.17.15",
-    "toVersion": "4.17.21"
-  },
+  "recommendedFix": "Upgrade lodash from 4.17.19 to 4.18.0",
   "validationPassed": true,
-  "prTitle": "Upgrade lodash to 4.17.21",
-  "status": "Ready for Review"
+  "prTitle": "Upgrade lodash to 4.18.0",
+  "prStatus": "Ready for Review"
 }

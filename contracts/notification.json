@@ -1,7 +1,11 @@
 {
-  "notificationId": "OSV-001",
-  "repository": "sample-repo",
   "package": "lodash",
+  "current_version": "4.17.19",
+  "ecosystem": "npm",
+  "source": "osv",
+  "vulnerable": true,
   "severity": "HIGH",
-  "description": "Prototype vulnerability notification"
+  "fixed_version": "4.18.0",
+  "cve": "CVE-2020-28500",
+  "alert_id": "OSV-001"
 }
