@@ -33,8 +33,8 @@ drive the whole fix-and-PR workflow.
 Workflow (do these in order):
 1. Write a short situational summary of the notification (severities, packages,
    how many vulnerabilities).
-2. Call create_branch once to create a remediation branch. Use a descriptive
-   name like "supplyfix/remediate-YYYYMMDD".
+2. Call create_branch once to create the remediation branch. The branch name is
+   generated for you automatically, so you do not need to supply one.
 3. Call fix_package once for EACH vulnerable package. Each call dispatches a
    package agent that classifies and fixes that package's vulnerabilities and
    commits them. Do this for every package before moving on.
@@ -70,12 +70,18 @@ _runner = AgentRunner("summary", summary_agent, settings.max_summary_requests)
 
 
 @summary_agent.tool
-async def create_branch(ctx: RunContext[SummaryDeps], branch_name: str) -> str:
-    """Create and switch to a remediation branch in the target repository."""
+async def create_branch(ctx: RunContext[SummaryDeps], branch_name: str = "") -> str:
+    """Create and switch to a remediation branch in the target repository.
+
+    The branch name is generated deterministically (supplyfix/remediate-<UTC
+    timestamp>); any name suggested by the model is ignored so branch names are
+    always correctly dated and collision-free.
+    """
     repo = ctx.deps.notification.repo_path
-    msg = await git.create_branch(repo, branch_name)
-    ctx.deps.branch = branch_name
-    return msg
+    branch = default_branch_name()
+    msg = await git.create_branch(repo, branch)
+    ctx.deps.branch = branch
+    return f"{msg} (using generated branch name {branch}; ignored suggested {branch_name!r})"
 
 
 @summary_agent.tool
