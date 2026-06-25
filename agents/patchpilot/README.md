@@ -92,9 +92,12 @@ packages, each with many vulnerabilities:
 
 - **Pull requests** use the GitHub CLI (`gh`) when present; otherwise the branch
   is pushed and a compare URL is returned so a PR can be opened manually.
-- **Email** is currently recorded to `./outbox/` and printed (see
-  `tools/email.py`). A `scripts/send_email.sh` stub exists for wiring real SMTP
-  / sendmail delivery later behind the same interface.
+- **Email**: the summary agent emails the requesting user the PR link and a
+  per-fix summary (`tools/email.py`). Delivery is via SMTP — set
+  `PATCHPILOT_SMTP_HOST` (and optionally `PATCHPILOT_SMTP_USER` /
+  `PATCHPILOT_SMTP_PASSWORD`) to send; see `config.yaml.example` for all
+  `PATCHPILOT_SMTP_*` settings. Every message is also recorded to `./outbox/`,
+  which is the only behaviour when no SMTP host is configured (handy for demos).
 - **Budgets**: every agent run is capped by a request limit and receives
   per-turn budget reminders, so runs terminate predictably.
 - Set `PATCHPILOT_EVENT_LOG=path.jsonl` to capture a structured trace of every

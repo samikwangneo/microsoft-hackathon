@@ -72,6 +72,23 @@ class Settings:
         self.max_package_requests: int = validated.budget.max_package_requests
         self.max_vulnerability_requests: int = validated.budget.max_vulnerability_requests
 
+        # SMTP delivery (optional). When smtp_host is empty, the email tool only
+        # records to the outbox; set PATCHPILOT_SMTP_HOST to actually send.
+        # smtp_user/smtp_password are optional — leave them unset to use an
+        # IP-allowlisted relay (e.g. smtp-relay.gmail.com) that needs no login.
+        self.smtp_host: str = os.environ.get("PATCHPILOT_SMTP_HOST", "")
+        self.smtp_port: int = int(os.environ.get("PATCHPILOT_SMTP_PORT", "587"))
+        self.smtp_user: str = os.environ.get("PATCHPILOT_SMTP_USER", "")
+        self.smtp_password: str = os.environ.get("PATCHPILOT_SMTP_PASSWORD", "")
+        self.smtp_from: str = os.environ.get(
+            "PATCHPILOT_SMTP_FROM", self.smtp_user or "patchpilot@localhost"
+        )
+        self.smtp_from_name: str = os.environ.get("PATCHPILOT_SMTP_FROM_NAME", "PatchPilot")
+        self.smtp_reply_to: str = os.environ.get("PATCHPILOT_SMTP_REPLY_TO", "")
+        self.smtp_starttls: bool = (
+            os.environ.get("PATCHPILOT_SMTP_STARTTLS", "true").lower() != "false"
+        )
+
     def _make_model(self, model_name: str) -> AnthropicModel:
         provider = AnthropicProvider(api_key=self.anthropic_api_key)
         return AnthropicModel(model_name, provider=provider)

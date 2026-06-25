@@ -25,7 +25,7 @@ dev = [
 patchpilot = "patchpilot.cli:main_sync"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/patchpilot"]
+packages = ["agents/patchpilot"]
 
 [tool.ruff]
 line-length = 100

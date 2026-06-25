@@ -272,3 +272,8 @@ index ccc3555..37b2e87 100644
 ```
 
 See the PR at: https://github.com/mmstoic/msft-hack-test/pull/1
+
+## TODO
+
+- Testing emails
+- Testing other kinds of patches
