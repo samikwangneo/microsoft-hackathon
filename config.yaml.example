@@ -1,0 +1,33 @@
+# PatchPilot configuration (optional).
+# Copy to config.yaml to override defaults. All values are optional.
+#
+# The only required secret is the ANTHROPIC_API_KEY environment variable:
+#   export ANTHROPIC_API_KEY=sk-ant-...
+#
+# Models can also be overridden via env vars:
+#   PATCHPILOT_SUMMARY_MODEL, PATCHPILOT_PACKAGE_MODEL, PATCHPILOT_VULN_MODEL
+#
+# Email delivery (env vars; the notification result is emailed to the user).
+# Leave PATCHPILOT_SMTP_HOST unset to only record emails to ./outbox/.
+#   PATCHPILOT_SMTP_HOST       SMTP server, e.g. smtp.gmail.com or
+#                              smtp-relay.gmail.com (no-auth, IP-allowlisted)
+#   PATCHPILOT_SMTP_PORT       default 587
+#   PATCHPILOT_SMTP_STARTTLS   default true ("false" to disable)
+#   PATCHPILOT_SMTP_USER       optional; set with _PASSWORD to authenticate
+#   PATCHPILOT_SMTP_PASSWORD   optional (use a Gmail App Password, not your login)
+#   PATCHPILOT_SMTP_FROM       sender address (defaults to SMTP_USER)
+#   PATCHPILOT_SMTP_FROM_NAME  sender display name (default "PatchPilot")
+#   PATCHPILOT_SMTP_REPLY_TO   optional Reply-To address
+
+app_settings:
+  models:
+    # Coordination tiers use Sonnet; the code-editing tier uses Opus.
+    summary: claude-sonnet-4-6
+    package: claude-sonnet-4-6
+    vulnerability: claude-opus-4-8
+
+  budget:
+    # Maximum model requests per agent run (guards against runaway loops).
+    max_summary_requests: 25
+    max_package_requests: 15
+    max_vulnerability_requests: 30
