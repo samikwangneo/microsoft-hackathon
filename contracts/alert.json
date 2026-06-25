@@ -1,9 +1,0 @@
-{
-  "alertId": "OSV-2026-001",
-  "repository": "sample-app",
-  "package": "lodash",
-  "severity": "HIGH",
-  "affectedVersion": "4.17.15",
-  "fixedVersion": "4.17.21",
-  "description": "Prototype vulnerability alert"
-}

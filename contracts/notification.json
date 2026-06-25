@@ -1,0 +1,7 @@
+{
+  "notificationId": "OSV-001",
+  "repository": "sample-repo",
+  "package": "lodash",
+  "severity": "HIGH",
+  "description": "Prototype vulnerability notification"
+}
