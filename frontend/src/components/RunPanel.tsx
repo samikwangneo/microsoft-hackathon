@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Loader2, Play } from "lucide-react";
 import type { RunEvent, RunRequest } from "../types";
 import { ActivityFeed } from "./ActivityFeed";
+import { AgentPipeline } from "./AgentPipeline";
 
 interface RunPanelProps {
   running: boolean;
@@ -54,6 +55,7 @@ export function RunPanel({ running, status, error, events, onRun }: RunPanelProp
 
       {(running || events.length > 0) && (
         <div className="mt-4">
+          <AgentPipeline events={events} />
           <ActivityFeed events={events} />
         </div>
       )}

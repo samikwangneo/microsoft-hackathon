@@ -49,6 +49,14 @@ async def changed_files(repo: Path) -> list[str]:
     return files
 
 
+async def diff_range(repo: Path, base: str, head: str = "HEAD", *, max_chars: int = 24_000) -> str:
+    """Unified diff of *head* relative to *base* (three-dot = the PR's own changes)."""
+    out, _, rc = await _git(repo, "diff", f"{base}...{head}")
+    if rc != 0:
+        return ""
+    return out[:max_chars]
+
+
 async def commit_all(repo: Path, message: str) -> tuple[bool, str]:
     """Stage every change and commit. Returns (committed, sha_or_error)."""
     if not await has_changes(repo):

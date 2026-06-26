@@ -130,7 +130,14 @@ async def _execute(
 
         state.status = "remediating"
         result = await run_summary_agent(notification, user_email, base_branch=base_branch)
-        state.payload = build_dashboard_payload(result, notification, repo_path.name)
+        diff_text = ""
+        if result.branch:
+            from patchpilot.tools.git import diff_range
+
+            diff_text = await diff_range(repo_path, base_branch, result.branch)
+        state.payload = build_dashboard_payload(
+            result, notification, repo_path.name, diff=diff_text
+        )
         state.status = "completed"
         _LATEST_COMPLETED = state.run_id
         emit("run_complete", agent="orchestrator", message="Remediation complete", pr_url=result.pr_url)

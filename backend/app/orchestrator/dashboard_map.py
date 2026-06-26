@@ -82,6 +82,7 @@ def build_dashboard_payload(
     result: RunResult | None,
     notification: Notification,
     repo_name: str,
+    diff: str = "",
 ) -> DashboardPayload:
     total_vulns = sum(len(p.vulnerabilities) for p in notification.packages)
 
@@ -131,6 +132,7 @@ def build_dashboard_payload(
                     files_changed=files_changed,
                     validation_checks=[],  # validation intentionally skipped
                     pr_url=result.pr_url or "",
+                    diff=diff,
                 ),
                 timeline=_timeline(result),
             )

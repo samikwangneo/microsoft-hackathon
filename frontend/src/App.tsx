@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Loader2, X } from "lucide-react";
 import type { DashboardPayload, RunEvent, RunRequest, Severity } from "./types";
 import { fetchDashboard, startRun, subscribeRunEvents } from "./lib/api";
 import { downloadFile, prsToCsv } from "./lib/format";
@@ -9,6 +9,7 @@ import { RunPanel } from "./components/RunPanel";
 import { PullRequestTable } from "./components/PullRequestTable";
 import { PrDetailPanel } from "./components/PrDetailPanel";
 import { TraceabilityTimeline } from "./components/TraceabilityTimeline";
+import { Confetti } from "./components/Confetti";
 
 const SEVERITIES: (Severity | "All")[] = ["All", "CRITICAL", "HIGH", "MEDIUM", "LOW"];
 
@@ -24,6 +25,8 @@ export default function App() {
   const [runStatus, setRunStatus] = useState<string | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
   const [runEvents, setRunEvents] = useState<RunEvent[]>([]);
+  const [celebrate, setCelebrate] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   const refetchDashboard = useCallback(async () => {
     try {
@@ -51,6 +54,12 @@ export default function App() {
             setRunning(false);
             setRunStatus(status);
             void refetchDashboard();
+            if (status === "completed") {
+              setCelebrate(true);
+              setToast("Remediation complete — pull request opened");
+              window.setTimeout(() => setCelebrate(false), 2800);
+              window.setTimeout(() => setToast(null), 6000);
+            }
           }
         );
       } catch (e) {
@@ -158,6 +167,22 @@ export default function App() {
       {selected && (
         <div className="mt-6">
           <TraceabilityTimeline prId={selected.id} steps={selected.timeline} />
+        </div>
+      )}
+
+      {celebrate && <Confetti />}
+
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-[70] flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-surface px-4 py-3 shadow-2xl">
+          <CheckCircle2 size={20} className="shrink-0 text-emerald-400" />
+          <span className="text-sm font-medium text-slate-100">{toast}</span>
+          <button
+            onClick={() => setToast(null)}
+            className="rounded-md p-0.5 text-slate-500 transition-colors hover:text-white"
+            aria-label="Dismiss"
+          >
+            <X size={16} />
+          </button>
         </div>
       )}
     </div>

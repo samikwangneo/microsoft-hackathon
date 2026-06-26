@@ -24,6 +24,21 @@ from .models import (
 )
 
 
+def _pkg_diff(pkg: str, old: str, new: str) -> str:
+    """A minimal package.json version-bump diff, for demoing 'View Diff'."""
+    return (
+        "diff --git a/package.json b/package.json\n"
+        "--- a/package.json\n"
+        "+++ b/package.json\n"
+        "@@ -14,7 +14,7 @@\n"
+        '   "dependencies": {\n'
+        f'-    "{pkg}": "^{old}",\n'
+        f'+    "{pkg}": "^{new}",\n'
+        '     "react": "^18.2.0"\n'
+        "   }\n"
+    )
+
+
 def _timeline(opened_done: bool, final: tuple[str, str, str, StepState]) -> list[TimelineStep]:
     """Standard 5-step pipeline timeline; the last step varies per PR status."""
 
@@ -67,6 +82,7 @@ PULL_REQUESTS: list[PullRequest] = [
                 ValidationCheck(label="No new vulns", status="Passed", ok=True),
             ],
             pr_url="https://github.com/acme/web-checkout-service/pull/482",
+            diff=_pkg_diff("lodash", "4.17.19", "4.17.22"),
         ),
         timeline=_timeline(True, ("Awaiting Review", "Now", "1 reviewer pending", StepState.CURRENT)),
     ),
@@ -88,6 +104,7 @@ PULL_REQUESTS: list[PullRequest] = [
                 ValidationCheck(label="No new vulns", status="Passed", ok=True),
             ],
             pr_url="https://github.com/acme/api-gateway/pull/481",
+            diff=_pkg_diff("axios", "1.6.2", "1.6.8"),
         ),
         timeline=_timeline(True, ("Merged", "5h ago", "Merged by a.lee", StepState.DONE)),
     ),
@@ -109,6 +126,7 @@ PULL_REQUESTS: list[PullRequest] = [
                 ValidationCheck(label="No new vulns", status="Passed", ok=True),
             ],
             pr_url="https://github.com/acme/auth-service/pull/480",
+            diff=_pkg_diff("express", "4.18.2", "4.19.2"),
         ),
         timeline=_timeline(True, ("Blocked", "1d ago", "CI failed — needs code change", StepState.CURRENT)),
     ),
@@ -130,6 +148,7 @@ PULL_REQUESTS: list[PullRequest] = [
                 ValidationCheck(label="No new vulns", status="Passed", ok=True),
             ],
             pr_url="https://github.com/acme/data-pipeline/pull/479",
+            diff=_pkg_diff("json5", "2.2.1", "2.2.3"),
         ),
         timeline=_timeline(True, ("Merged", "2d ago", "Merged by k.patel", StepState.DONE)),
     ),
@@ -151,6 +170,7 @@ PULL_REQUESTS: list[PullRequest] = [
                 ValidationCheck(label="No new vulns", status="Passed", ok=True),
             ],
             pr_url="https://github.com/acme/web-checkout-service/pull/478",
+            diff=_pkg_diff("semver", "7.5.1", "7.5.2"),
         ),
         timeline=_timeline(True, ("Awaiting Review", "Now", "2 reviewers pending", StepState.CURRENT)),
     ),
@@ -172,6 +192,7 @@ PULL_REQUESTS: list[PullRequest] = [
                 ValidationCheck(label="No new vulns", status="Passed", ok=True),
             ],
             pr_url="https://github.com/acme/ml-inference/pull/477",
+            diff=_pkg_diff("tough-cookie", "4.1.2", "4.1.3"),
         ),
         timeline=_timeline(True, ("Awaiting Review", "Now", "1 reviewer pending", StepState.CURRENT)),
     ),

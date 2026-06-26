@@ -79,6 +79,7 @@ class PrDetail(BaseModel):
     files_changed: list[str] = Field(default_factory=list)
     validation_checks: list[ValidationCheck] = Field(default_factory=list)
     pr_url: str
+    diff: str = ""  # unified git diff of the remediation branch vs. base
 
 
 class TimelineStep(BaseModel):

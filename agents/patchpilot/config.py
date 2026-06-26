@@ -16,6 +16,7 @@ from functools import cached_property
 from pathlib import Path
 
 import yaml
+from openai import AsyncAzureOpenAI, AsyncOpenAI
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.azure import AzureProvider
@@ -77,6 +78,11 @@ class Settings:
         # required by Foundry resources). A dated value (e.g. 2024-10-21) uses
         # the classic AzureProvider path instead.
         self.azure_api_version: str = os.environ.get("AZURE_OPENAI_API_VERSION", "v1")
+        # Agents fan out and hit one deployment concurrently, so transient 429s
+        # are expected. The OpenAI SDK retries with exponential backoff and
+        # honors Azure's Retry-After header; raise the cap above the default (2)
+        # so a burst is retried instead of killing the whole run.
+        self.azure_max_retries: int = int(os.environ.get("AZURE_OPENAI_MAX_RETRIES", "6"))
         # A single AZURE_OPENAI_DEPLOYMENT sets every tier at once (the common
         # case — one deployment). Per-tier PATCHPILOT_*_MODEL still wins if set.
         default_deployment = os.environ.get("AZURE_OPENAI_DEPLOYMENT", "")
@@ -118,14 +124,21 @@ class Settings:
         AZURE_OPENAI_API_VERSION to use the classic AzureProvider instead.
         """
         if self.azure_api_version and self.azure_api_version != "v1":
-            provider: AzureProvider | OpenAIProvider = AzureProvider(
+            azure_client = AsyncAzureOpenAI(
                 azure_endpoint=self.azure_endpoint,
                 api_version=self.azure_api_version,
                 api_key=self.azure_api_key,
+                max_retries=self.azure_max_retries,
             )
+            provider: AzureProvider | OpenAIProvider = AzureProvider(openai_client=azure_client)
         else:
             base_url = self.azure_endpoint.rstrip("/") + "/openai/v1/"
-            provider = OpenAIProvider(base_url=base_url, api_key=self.azure_api_key)
+            openai_client = AsyncOpenAI(
+                base_url=base_url,
+                api_key=self.azure_api_key,
+                max_retries=self.azure_max_retries,
+            )
+            provider = OpenAIProvider(openai_client=openai_client)
         return OpenAIChatModel(deployment, provider=provider)
 
     @cached_property

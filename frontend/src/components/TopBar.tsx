@@ -26,7 +26,7 @@ export function TopBar({
           <Shield size={22} className="text-white" fill="white" strokeWidth={1.5} />
         </div>
         <div>
-          <h1 className="text-lg font-bold leading-tight text-white">Sentinel</h1>
+          <h1 className="text-lg font-bold leading-tight text-white">PatchPilot</h1>
           <p className="text-xs text-slate-500">Security Dashboard</p>
         </div>
       </div>

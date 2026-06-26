@@ -46,6 +46,7 @@ export interface PrDetail {
   files_changed: string[];
   validation_checks: ValidationCheck[];
   pr_url: string;
+  diff: string;
 }
 export interface TimelineStep {
   label: string;
