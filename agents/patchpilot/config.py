@@ -1,9 +1,12 @@
 """Configuration: model selection and per-agent request budgets.
 
 Values come from (in order of precedence): environment variables, an optional
-config.yaml, then sensible defaults. Models are Anthropic Claude models built
-directly through pydantic-ai's Anthropic provider, so the only required secret
-is ANTHROPIC_API_KEY.
+config.yaml, then sensible defaults. Models run on **Azure OpenAI** through
+pydantic-ai's OpenAI model + Azure provider, so the required secrets are
+AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY (plus the deployment names).
+
+The per-tier "model" values are Azure **deployment names** (what you named the
+model when you deployed it), not raw model ids.
 """
 
 from __future__ import annotations
@@ -14,8 +17,8 @@ from pathlib import Path
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
-from pydantic_ai.models.anthropic import AnthropicModel
-from pydantic_ai.providers.anthropic import AnthropicProvider
+from pydantic_ai.models.openai import OpenAIChatModel
+from pydantic_ai.providers.azure import AzureProvider
 
 
 def _load_config() -> dict:
@@ -33,11 +36,12 @@ def _load_config() -> dict:
 
 class _ModelSettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    # The vulnerability agent does the hard work (code edits), so it defaults to
-    # the most capable model. Summary/package coordination uses Sonnet.
-    summary: str = "claude-sonnet-4-6"
-    package: str = "claude-sonnet-4-6"
-    vulnerability: str = "claude-opus-4-8"
+    # Azure **deployment names**. Default every tier to one deployment (gpt-4o)
+    # since a typical Azure resource has a single deployment; override per tier
+    # via env if you deploy more (see Settings / AZURE_OPENAI_DEPLOYMENT).
+    summary: str = "gpt-4o"
+    package: str = "gpt-4o"
+    vulnerability: str = "gpt-4o"
 
 
 class _BudgetSettings(BaseModel):
@@ -58,15 +62,30 @@ class Settings:
         raw = _load_config()
         validated = _AppSettings(**raw.get("app_settings", {}))
 
-        self.anthropic_api_key: str = os.environ.get("ANTHROPIC_API_KEY", "")
+        # Azure OpenAI credentials. AZURE_OPENAI_* are the canonical names;
+        # API_KEY / PROJECT_ENDPOINT (from the repo .env.example) are accepted
+        # as fallbacks so a single .env works for the whole project.
+        self.azure_endpoint: str = (
+            os.environ.get("AZURE_OPENAI_ENDPOINT")
+            or os.environ.get("PROJECT_ENDPOINT", "")
+        )
+        self.azure_api_key: str = (
+            os.environ.get("AZURE_OPENAI_API_KEY") or os.environ.get("API_KEY", "")
+        )
+        self.azure_api_version: str = os.environ.get(
+            "AZURE_OPENAI_API_VERSION", "2024-10-21"
+        )
+        # A single AZURE_OPENAI_DEPLOYMENT sets every tier at once (the common
+        # case — one deployment). Per-tier PATCHPILOT_*_MODEL still wins if set.
+        default_deployment = os.environ.get("AZURE_OPENAI_DEPLOYMENT", "")
         self.summary_model: str = os.environ.get(
-            "PATCHPILOT_SUMMARY_MODEL", validated.models.summary
+            "PATCHPILOT_SUMMARY_MODEL", default_deployment or validated.models.summary
         )
         self.package_model: str = os.environ.get(
-            "PATCHPILOT_PACKAGE_MODEL", validated.models.package
+            "PATCHPILOT_PACKAGE_MODEL", default_deployment or validated.models.package
         )
         self.vulnerability_model: str = os.environ.get(
-            "PATCHPILOT_VULN_MODEL", validated.models.vulnerability
+            "PATCHPILOT_VULN_MODEL", default_deployment or validated.models.vulnerability
         )
         self.max_summary_requests: int = validated.budget.max_summary_requests
         self.max_package_requests: int = validated.budget.max_package_requests
@@ -89,20 +108,25 @@ class Settings:
             os.environ.get("PATCHPILOT_SMTP_STARTTLS", "true").lower() != "false"
         )
 
-    def _make_model(self, model_name: str) -> AnthropicModel:
-        provider = AnthropicProvider(api_key=self.anthropic_api_key)
-        return AnthropicModel(model_name, provider=provider)
+    def _make_model(self, deployment: str) -> OpenAIChatModel:
+        """Build an Azure OpenAI model for a given deployment name."""
+        provider = AzureProvider(
+            azure_endpoint=self.azure_endpoint,
+            api_version=self.azure_api_version,
+            api_key=self.azure_api_key,
+        )
+        return OpenAIChatModel(deployment, provider=provider)
 
     @cached_property
-    def summary(self) -> AnthropicModel:
+    def summary(self) -> OpenAIChatModel:
         return self._make_model(self.summary_model)
 
     @cached_property
-    def package(self) -> AnthropicModel:
+    def package(self) -> OpenAIChatModel:
         return self._make_model(self.package_model)
 
     @cached_property
-    def vulnerability(self) -> AnthropicModel:
+    def vulnerability(self) -> OpenAIChatModel:
         return self._make_model(self.vulnerability_model)
 
 

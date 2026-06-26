@@ -267,3 +267,6 @@ node_modules/
 # Misc
 tmp/
 temp/
+# PatchPilot runtime artifacts
+backend/runs/
+outbox/

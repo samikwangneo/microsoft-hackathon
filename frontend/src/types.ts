@@ -71,3 +71,22 @@ export interface DashboardPayload {
   repos: string[];
   pull_requests: PullRequest[];
 }
+
+// --- Remediation runs (live SSE) -------------------------------------------
+
+export interface RunRequest {
+  repo_path: string;
+  package_source_file?: string;
+  email: string;
+  base_branch?: string;
+}
+
+export interface RunEvent {
+  id: string;
+  ts: number;
+  kind: string; // run_started, intake_complete, tool_call, agent_finished, run_complete, ...
+  run_id: string | null;
+  agent: string | null;
+  message: string | null;
+  data: Record<string, unknown>;
+}

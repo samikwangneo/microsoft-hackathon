@@ -5,12 +5,16 @@ Run: `uvicorn app.main:app --reload` (from the backend/ directory).
 
 from __future__ import annotations
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from ._env import load_root_env
 
-from . import __version__
-from .config import get_settings
-from .routes import dashboard, intake
+load_root_env()  # populate os.environ from the root .env before anything reads it
+
+from fastapi import FastAPI  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+
+from . import __version__  # noqa: E402
+from .config import get_settings  # noqa: E402
+from .routes import dashboard, intake, run  # noqa: E402
 
 settings = get_settings()
 
@@ -30,6 +34,7 @@ app.add_middleware(
 
 app.include_router(intake.router)
 app.include_router(dashboard.router)
+app.include_router(run.router)
 
 
 @app.get("/health", tags=["meta"])

@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Loader2 } from "lucide-react";
-import type { DashboardPayload, Severity } from "./types";
-import { fetchDashboard } from "./lib/api";
+import type { DashboardPayload, RunEvent, RunRequest, Severity } from "./types";
+import { fetchDashboard, startRun, subscribeRunEvents } from "./lib/api";
 import { downloadFile, prsToCsv } from "./lib/format";
 import { TopBar } from "./components/TopBar";
 import { KpiCards } from "./components/KpiCards";
+import { RunPanel } from "./components/RunPanel";
 import { PullRequestTable } from "./components/PullRequestTable";
 import { PrDetailPanel } from "./components/PrDetailPanel";
 import { TraceabilityTimeline } from "./components/TraceabilityTimeline";
@@ -17,6 +18,49 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [repoFilter, setRepoFilter] = useState("All Repos");
   const [severityFilter, setSeverityFilter] = useState("All");
+
+  // Remediation run (live SSE)
+  const [running, setRunning] = useState(false);
+  const [runStatus, setRunStatus] = useState<string | null>(null);
+  const [runError, setRunError] = useState<string | null>(null);
+  const [runEvents, setRunEvents] = useState<RunEvent[]>([]);
+
+  const refetchDashboard = useCallback(async () => {
+    try {
+      const data = await fetchDashboard();
+      setPayload(data);
+      setSelectedId(data.pull_requests[0]?.id ?? null);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }, []);
+
+  const handleRun = useCallback(
+    async (req: RunRequest) => {
+      setRunError(null);
+      setRunEvents([]);
+      setRunStatus("starting");
+      try {
+        const runId = await startRun(req);
+        setRunning(true);
+        setRunStatus("running");
+        subscribeRunEvents(
+          runId,
+          (e) => setRunEvents((prev) => [...prev, e]),
+          (status) => {
+            setRunning(false);
+            setRunStatus(status);
+            void refetchDashboard();
+          }
+        );
+      } catch (e) {
+        setRunning(false);
+        setRunStatus("failed");
+        setRunError((e as Error).message);
+      }
+    },
+    [refetchDashboard]
+  );
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -88,6 +132,16 @@ export default function App() {
 
       <div className="mt-7">
         <KpiCards kpis={payload.kpis} />
+      </div>
+
+      <div className="mt-7">
+        <RunPanel
+          running={running}
+          status={runStatus}
+          error={runError}
+          events={runEvents}
+          onRun={handleRun}
+        />
       </div>
 
       <div className="mt-7 grid grid-cols-1 gap-6 xl:grid-cols-[1fr_400px]">
