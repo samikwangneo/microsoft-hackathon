@@ -1,5 +1,8 @@
 # PatchPilot
 
+VIDEO LINK: https://www.youtube.com/watch?v=RRN6asKZZgk
+
+
 PatchPilot is an agentic supply-chain security assistant. It scans a local
 repository manifest for vulnerable dependencies, runs a hierarchy of remediation
 agents, opens a pull request, and surfaces progress in a dashboard.
