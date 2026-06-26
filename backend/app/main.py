@@ -5,7 +5,16 @@ Run: `uvicorn app.main:app --reload` (from the backend/ directory).
 
 from __future__ import annotations
 
-from ._env import load_root_env
+import asyncio
+import sys
+
+# On Windows, asyncio subprocesses (git/npm, used by the agents) require the
+# Proactor event loop; the Selector loop raises NotImplementedError. Set this
+# before uvicorn creates its loop.
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
+from ._env import load_root_env  # noqa: E402
 
 load_root_env()  # populate os.environ from the root .env before anything reads it
 

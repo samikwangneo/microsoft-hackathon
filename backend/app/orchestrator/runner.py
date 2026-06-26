@@ -135,9 +135,12 @@ async def _execute(
         _LATEST_COMPLETED = state.run_id
         emit("run_complete", agent="orchestrator", message="Remediation complete", pr_url=result.pr_url)
     except Exception as exc:  # noqa: BLE001 — surface any failure to the UI
+        # Some exceptions (e.g. NotImplementedError) have an empty str(); always
+        # include the type so the failure is diagnosable.
+        detail = f"{type(exc).__name__}: {exc}".rstrip(": ")
         state.status = "failed"
-        state.error = str(exc)
+        state.error = detail
         try:
-            emit("run_failed", agent="orchestrator", message=str(exc))
+            emit("run_failed", agent="orchestrator", message=detail)
         except Exception:  # noqa: BLE001
             pass

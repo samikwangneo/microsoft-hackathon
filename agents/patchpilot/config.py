@@ -19,6 +19,7 @@ import yaml
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.azure import AzureProvider
+from pydantic_ai.providers.openai import OpenAIProvider
 
 
 def _load_config() -> dict:
@@ -72,9 +73,10 @@ class Settings:
         self.azure_api_key: str = (
             os.environ.get("AZURE_OPENAI_API_KEY") or os.environ.get("API_KEY", "")
         )
-        self.azure_api_version: str = os.environ.get(
-            "AZURE_OPENAI_API_VERSION", "2024-10-21"
-        )
+        # "v1" (default) uses the modern Azure OpenAI v1 API (no dated version,
+        # required by Foundry resources). A dated value (e.g. 2024-10-21) uses
+        # the classic AzureProvider path instead.
+        self.azure_api_version: str = os.environ.get("AZURE_OPENAI_API_VERSION", "v1")
         # A single AZURE_OPENAI_DEPLOYMENT sets every tier at once (the common
         # case — one deployment). Per-tier PATCHPILOT_*_MODEL still wins if set.
         default_deployment = os.environ.get("AZURE_OPENAI_DEPLOYMENT", "")
@@ -109,12 +111,21 @@ class Settings:
         )
 
     def _make_model(self, deployment: str) -> OpenAIChatModel:
-        """Build an Azure OpenAI model for a given deployment name."""
-        provider = AzureProvider(
-            azure_endpoint=self.azure_endpoint,
-            api_version=self.azure_api_version,
-            api_key=self.azure_api_key,
-        )
+        """Build an Azure OpenAI model for a given deployment name.
+
+        Uses the modern v1 API by default (base_url `.../openai/v1/`, no dated
+        api-version — required by Foundry resources). Set a dated
+        AZURE_OPENAI_API_VERSION to use the classic AzureProvider instead.
+        """
+        if self.azure_api_version and self.azure_api_version != "v1":
+            provider: AzureProvider | OpenAIProvider = AzureProvider(
+                azure_endpoint=self.azure_endpoint,
+                api_version=self.azure_api_version,
+                api_key=self.azure_api_key,
+            )
+        else:
+            base_url = self.azure_endpoint.rstrip("/") + "/openai/v1/"
+            provider = OpenAIProvider(base_url=base_url, api_key=self.azure_api_key)
         return OpenAIChatModel(deployment, provider=provider)
 
     @cached_property

@@ -30,10 +30,16 @@ python -m venv .venv
 .venv/Scripts/pip install -r requirements.txt      # Windows
 # source .venv/bin/activate && pip install -r requirements.txt   # macOS/Linux
 
-uvicorn app.main:app --reload
+uvicorn app.main:app
 ```
 
 Open http://127.0.0.1:8000/docs for interactive Swagger.
+
+> **Windows + remediation runs:** do **not** use `--reload`. uvicorn forces the
+> asyncio *Selector* event loop when reload/workers are on, and the agents'
+> `git`/`npm` subprocess calls require the *Proactor* loop (else they fail with
+> an empty `NotImplementedError`). Run without `--reload` (Proactor is used) for
+> any run that invokes the agents.
 
 ## Endpoints
 
